@@ -1,26 +1,229 @@
 @import "tailwindcss";
 
+/*
+ * Datasheet: warm paper, black ink, a blue-ink accent, red for annotations.
+ * Every colour and radius below is a token, so the whole app follows this one file.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f3f0e6;
+  --background-elevated: #fbfaf4;
+  --foreground: #15181d;
+  --foreground-muted: #4a515e;
+  --ink: #15181d;
+
+  /* inks, dark enough for body-size text on the paper (WCAG AA) */
+  --neon-blue: #1a42c0;
+  --neon-purple: #5e2da8;
+  --neon-orange: #963b00;
+  --neon-green: #0c5f2b;
+  --neon-red: #ac1b17;
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(21, 24, 29, 0.24);
+  --glass-highlight: rgba(21, 24, 29, 0.1);
+
+  /* sharp corners, like a technical drawing */
+  --radius-md: 3px;
+  --radius-lg: 4px;
+
+  color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-elevated: var(--background-elevated);
   --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-ink: var(--ink);
+
+  --color-neon-blue: var(--neon-blue);
+  --color-neon-purple: var(--neon-purple);
+  --color-neon-orange: var(--neon-orange);
+  --color-neon-green: var(--neon-green);
+  --color-neon-red: var(--neon-red);
+
+  --color-glass-bg: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
+
+  --radius-sm: 2px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
+  --radius-3xl: 10px;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-plex), var(--font-geist-sans), sans-serif;
+  --font-label: var(--font-plex-mono), var(--font-geist-mono), monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--glass-border);
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  /* the faint blue ruling of engineering paper */
+  background-image:
+    linear-gradient(rgba(31, 75, 216, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 75, 216, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--neon-blue);
+  outline-offset: 2px;
+}
+
+/* A spec box: white card, ink hairline, and a hard offset shadow like a printed figure */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 3px 3px 0 rgba(21, 24, 29, 0.07);
+}
+
+.glass-inset {
+  background: rgba(21, 24, 29, 0.035);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+
+/* "Glow" utilities: emphasis is now a solid ink outline with a hard offset, not a neon blur */
+.glow-blue {
+  box-shadow: 0 0 0 1px var(--neon-blue), 3px 3px 0 rgba(31, 75, 216, 0.28);
+}
+
+.glow-purple {
+  box-shadow: 0 0 0 1px var(--neon-purple), 3px 3px 0 rgba(106, 53, 184, 0.28);
+}
+
+.glow-orange {
+  box-shadow: 0 0 0 1px var(--neon-orange), 3px 3px 0 rgba(168, 67, 0, 0.28);
+}
+
+.glow-green {
+  box-shadow: 0 0 0 1px var(--neon-green), 3px 3px 0 rgba(15, 109, 50, 0.28);
+}
+
+.glow-red {
+  box-shadow: 0 0 0 1px var(--neon-red), 3px 3px 0 rgba(192, 33, 28, 0.28);
+}
+
+.text-glow-blue {
+  text-shadow: none;
+}
+
+.text-gradient-blue-purple {
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Small mono labels, like the captions and table headings of a datasheet */
+.datasheet-label {
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Registration marks in the corners of a feature box */
+.corner-ticks {
+  position: relative;
+}
+.corner-ticks::before,
+.corner-ticks::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--ink);
+  pointer-events: none;
+}
+.corner-ticks::before {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.corner-ticks::after {
+  right: -1px;
+  bottom: -1px;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* Text that sits on a photo stays readable */
+.hero-text {
+  text-shadow: 0 0 14px rgba(243, 240, 230, 0.95), 0 0 3px rgba(243, 240, 230, 0.9);
+}
+
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(21, 24, 29, 0.3) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(21, 24, 29, 0.3);
+  border-radius: 8px;
+}
+
+/* A register that just changed flashes green once */
+@keyframes flash-register {
+  0% {
+    background-color: rgba(15, 109, 50, 0.3);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.flash-register {
+  animation: flash-register 700ms ease-out;
+}
+
+/* A wire carrying a signal pulses gently */
+@keyframes pulse-wire {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.pulse-wire {
+  animation: pulse-wire 1.4s ease-in-out infinite;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
